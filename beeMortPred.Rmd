@@ -1,0 +1,54 @@
+---
+title: "Predict bee mortality"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+beemort <- readxl::read_xlsx("./input/883eax1-sup-0001.xlsx")
+```
+
+# data overview
+```{r}
+glimpse(beemort)
+```
+```{r}
+library(mlr)
+library(tidyverse)
+library(magrittr)
+```
+
+```{r}
+beemort.reduced <-
+  beemort %>% 
+  filter(Program=="First Year") %>%
+  mutate_all(factor) %>%
+  select(Winter_Mortality_Class,Age,Activity,Bee_population_size,Country,Apiary_Size,Production,Apiarist_book,
+         Breed,ClinSign_Honeybees,H_Rate_ColMortality,QueenProblems,Management,Swarm_bought,Swarm_produced,
+         Queen_bought,Queen_produced,Environment,AmericanFoulbroodV2,Migration,Merger) 
+  
+
+task = makeClassifTask(data = beemort.reduced %>% data.frame(), target = "Winter_Mortality_Class")
+task
+```
+```{r}
+classif.lrn = makeLearner("classif.randomForest")
+```
+
+```{r}
+rdesc = makeResampleDesc("Holdout")
+resample(classif.lrn,task,rdesc,measures = list(acc))
+
+#mod = train(classif.lrn, task)
+#mod
+```
+
+
+```{r}
+learners=list("classif.randomForest","classif.ksvm")
+bmr = benchmark(learners, task, rdesc,list(acc))
+```
+
