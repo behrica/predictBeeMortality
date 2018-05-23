@@ -21,6 +21,12 @@ library(tidyverse)
 library(magrittr)
 ```
 
+# random forrest with all statistically significant variables
+
+The statisticl analysis identified certain variables as "significant".
+So our first predictor will use those to predict the target "Winter_Mortality_Class" using randomForrest,
+
+
 ```{r}
 beemort.reduced <-
   beemort %>% 
